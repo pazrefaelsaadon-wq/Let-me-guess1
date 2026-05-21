@@ -392,7 +392,7 @@ function Landing() {
               <Input
                 value={loginAddr}
                 onChange={(e) => setLoginAddr(e.target.value)}
-                placeholder="name@domain.com"
+                placeholder="pmail@wshu.net"
                 autoComplete="email"
                 autoFocus
                 className="border-white/10 bg-white/5"
