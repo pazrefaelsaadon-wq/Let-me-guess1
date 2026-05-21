@@ -267,7 +267,7 @@ function Landing() {
                   </div>
                   <div className="text-white/40">$ create inbox</div>
                   <div className="text-emerald-300">✓ ready in 1.2s</div>
-                  <div className="mt-1 text-violet-300">→ alex-9k2@pmail.tm</div>
+                  <div className="mt-1 text-violet-300">→ pmail@wshu.net</div>
                 </div>
               </div>
             </BentoCard>
