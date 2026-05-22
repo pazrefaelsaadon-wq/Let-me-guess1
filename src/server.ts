@@ -70,6 +70,9 @@ const FRAME_ANCESTORS = [
   "'self'",
   "https://pmail.page.gd",
   "https://app.pmail.page.gd",
+  "https://*.lovable.app",
+  "https://*.lovableproject.com",
+  "https://lovable.dev",
 ];
 
 function applyFrameHeaders(response: Response): Response {
