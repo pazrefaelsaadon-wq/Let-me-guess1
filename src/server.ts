@@ -66,15 +66,46 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   return brandedErrorResponse();
 }
 
+const FRAME_ANCESTORS = [
+  "'self'",
+  "https://pmail.page.gd",
+  "https://app.pmail.page.gd",
+];
+
+function applyFrameHeaders(response: Response): Response {
+  // Clone headers so we can mutate even on immutable responses.
+  const headers = new Headers(response.headers);
+  // X-Frame-Options can't express multiple origins; remove it and rely on CSP.
+  headers.delete("x-frame-options");
+  const existingCsp = headers.get("content-security-policy");
+  const frameDirective = `frame-ancestors ${FRAME_ANCESTORS.join(" ")}`;
+  if (existingCsp && /frame-ancestors/i.test(existingCsp)) {
+    headers.set(
+      "content-security-policy",
+      existingCsp.replace(/frame-ancestors[^;]*/i, frameDirective),
+    );
+  } else if (existingCsp) {
+    headers.set("content-security-policy", `${existingCsp}; ${frameDirective}`);
+  } else {
+    headers.set("content-security-policy", frameDirective);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
     try {
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
-      return await normalizeCatastrophicSsrResponse(response);
+      const normalized = await normalizeCatastrophicSsrResponse(response);
+      return applyFrameHeaders(normalized);
     } catch (error) {
       console.error(error);
-      return brandedErrorResponse();
+      return applyFrameHeaders(brandedErrorResponse());
     }
   },
 };
